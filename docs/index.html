@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>高瀬さんの筋トレ応援</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><h1>高瀬さんの筋トレ応援</h1><div id="streak" class="streak"></div></header>
+<main>
+  <section class="coach">
+    <div class="stage"><img id="face" src="img/smile.png" alt="高瀬さん"></div>
+    <div id="bubble" class="bubble">お疲れさまっす！今日は何やります？</div>
+    <div id="big" class="big"></div>
+    <div id="sub" class="sub"></div>
+  </section>
+
+  <section class="card" id="setup">
+    <label>メニュー
+      <select id="exercise">
+        <option value="squat">スクワット</option>
+        <option value="pushup">腕立て</option>
+        <option value="situp">腹筋</option>
+        <option value="plank">プランク（秒数）</option>
+      </select></label>
+    <div class="row">
+      <label><span id="repsLabel">回数</span><input id="reps" type="number" min="1" max="300" value="10"></label>
+      <label>セット<input id="sets" type="number" min="1" max="10" value="3"></label>
+      <label>休憩（秒）<input id="rest" type="number" min="5" max="300" value="30"></label>
+    </div>
+    <label>テンポ <span id="tempoVal"></span><input id="tempo" type="range" min="1" max="5" step="0.5" value="2.5"></label>
+    <div class="row buttons">
+      <button id="start" class="primary">スタート</button>
+      <button id="pause" disabled>一時停止</button>
+      <button id="stop" disabled>やめる</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>記録</h2>
+    <div id="today" class="today"></div>
+    <ul id="history" class="history"></ul>
+    <button id="clearHist" class="small">記録を消す</button>
+  </section>
+
+  <details class="card">
+    <summary>設定・Gemini で自由におしゃべり</summary>
+    <label>呼んでほしい名前<input id="nickname" placeholder="例：由衣さん"></label>
+    <label><input type="checkbox" id="voiceOn" checked> 声で数える（ブラウザの読み上げ・無料）</label>
+    <label>読み上げの声<select id="ttsVoice"></select></label>
+    <hr>
+    <p class="note">Gemini Live モードでは、高瀬さんと声で自由に会話できます。キーはこのブラウザの中（localStorage）にだけ保存されます。</p>
+    <label>Gemini API キー<input id="gkey" type="password" autocomplete="off" placeholder="AI Studio のキー"></label>
+    <div class="row">
+      <label>モデル<select id="gmodel"></select></label>
+      <label>声<select id="gvoice"></select></label>
+    </div>
+    <button id="gconnect">Gemini で話す</button>
+    <div id="gstatus" class="note"></div>
+  </details>
+  <div id="error" class="error"></div>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

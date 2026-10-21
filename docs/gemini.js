@@ -1,6 +1,6 @@
 // Gemini Live（ブラウザから直接WebSocket、AI Studioのキー）。slot-060 のコードを流用。
-import { coachInstructions } from "./persona.js?v=3";
-import { resampleLinear, floatToPcm16, bytesToBase64, base64ToBytes, pcm16BytesToFloat32, concatFloat32 } from "./audio-util.js?v=3";
+import { coachInstructions } from "./persona.js?v=4";
+import { resampleLinear, floatToPcm16, bytesToBase64, base64ToBytes, pcm16BytesToFloat32, concatFloat32 } from "./audio-util.js?v=4";
 
 const URL_BASE = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=";
 const IN_RATE = 16000, OUT_RATE = 24000;

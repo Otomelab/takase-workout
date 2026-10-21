@@ -6,14 +6,22 @@ h1{font-size:18px;margin:0}h2{font-size:16px;margin:0 0 8px}
 main{max-width:560px;margin:0 auto;padding:12px}
 .coach{position:relative;text-align:center}
 .stage{height:46vh;max-height:420px;display:flex;justify-content:center;align-items:flex-end;overflow:hidden;border-radius:16px;background:radial-gradient(circle at 50% 30%,#3a3f4f,#16181f)}
-.stage img{height:100%;object-fit:contain;transform-origin:50% 100%;transition:filter .2s}
-.bounce{animation:bounce .35s ease-out}
-.cheer{animation:cheer .6s ease-out}
-@keyframes bounce{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-14px) scale(1.03) rotate(-1.5deg)}100%{transform:none}}
+.stage{contain:layout paint}
+.breath,.bob{position:relative;height:100%;aspect-ratio:301/464;transform-origin:50% 100%;will-change:transform}
+.breath{animation:breathe 4s ease-in-out infinite}
+.layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .3s ease;backface-visibility:hidden}
+.layer.on{opacity:1}
+.bounceA{animation:bounce .35s ease-out}.bounceB{animation:bounce2 .35s ease-out}
+.cheerA{animation:cheer .6s ease-out}.cheerB{animation:cheer2 .6s ease-out}
+@keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.012)}}
+@keyframes bounce2{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-10px) scale(1.02)}100%{transform:none}}
+@keyframes cheer2{0%{transform:scale(1)}30%{transform:scale(1.06) rotate(1.5deg)}60%{transform:scale(.99) rotate(-1.5deg)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.breath,.bounceA,.bounceB,.cheerA,.cheerB{animation:none!important}.layer{transition:none}}
+@keyframes bounce{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-10px) scale(1.02)}100%{transform:none}}
 @keyframes cheer{0%{transform:scale(1)}30%{transform:scale(1.08) rotate(2deg)}60%{transform:scale(.98) rotate(-2deg)}100%{transform:none}}
 .bubble{margin:10px auto 0;background:#fff;color:#222;border-radius:14px;padding:10px 14px;max-width:92%;min-height:44px;font-size:16px;position:relative}
 .bubble:before{content:"";position:absolute;top:-8px;left:50%;border:8px solid transparent;border-top:0;border-bottom-color:#fff;transform:translateX(-50%)}
-.big{position:absolute;top:10px;right:16px;font-size:64px;font-weight:900;text-shadow:0 3px 10px #000}
+.big{will-change:contents;font-variant-numeric:tabular-nums;position:absolute;top:10px;right:16px;font-size:64px;font-weight:900;text-shadow:0 3px 10px #000}
 .sub{position:absolute;top:14px;left:16px;font-size:14px;background:rgba(0,0,0,.5);border-radius:8px;padding:2px 8px}
 .sub:empty{display:none}
 .card{background:#20232c;border-radius:14px;padding:14px;margin-top:12px}

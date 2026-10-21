@@ -1,9 +1,10 @@
-import { GeminiCoach, GEMINI_MODELS, GEMINI_VOICES } from "./gemini.js?v=3";
-import { pickPraise, FACE_FOR } from "./praise.js?v=3";
+import { GeminiCoach, GEMINI_MODELS, GEMINI_VOICES } from "./gemini.js?v=4";
+import { pickPraise, FACE_FOR } from "./praise.js?v=4";
 
 const $ = (id) => document.getElementById(id);
 const FACES = { neutral: "img/neutral.png", smile: "img/smile.png", surprise: "img/surprise.png", shy: "img/shy.png", worried: "img/worried.png", fun: "img/fun.png" };
-Object.values(FACES).forEach((src) => { const i = new Image(); i.src = src; });
+// 起動時に全部読み込んでデコードしておく（切り替え時のカクつき防止）
+Object.values(FACES).forEach((src) => { const i = new Image(); i.src = src; i.decode?.().catch(() => {}); });
 const EX = {
   squat: { name: "スクワット", unit: "回", form: ["膝とつま先、同じ向きで", "お尻を後ろに引いて", "背中まっすぐ、胸張って"] },
   pushup: { name: "腕立て", unit: "回", form: ["体は一直線っす", "胸から床に近づけて", "肘、開きすぎないで"] },
@@ -25,10 +26,36 @@ function countWord(n) {
 }
 
 // --- 表情とアニメ ---
-const face = $("face");
+// 表情：2枚重ねてクロスフェード。最低1.5秒は同じ表情を保ち、しばらくしたら真顔にゆっくり戻る
+const face = $("face"), bob = $("bob");
+const layers = [$("faceA"), $("faceB")];
+let front = 0, curExpr = "smile", lastSwitch = 0, pendingExpr = null, pendingTimer = 0, idleTimer = 0, flip = false;
+const HOLD = 1500, IDLE_BACK = 4000;
+function crossfade(expr) {
+  if (expr === curExpr) return;
+  const back = layers[1 - front];
+  back.src = FACES[expr];
+  const go = () => { back.classList.add("on"); layers[front].classList.remove("on"); front = 1 - front; };
+  back.decode ? back.decode().then(go, go) : go();
+  curExpr = expr; lastSwitch = performance.now();
+}
+function setExpr(expr) {
+  clearTimeout(pendingTimer); pendingExpr = null;
+  const since = performance.now() - lastSwitch;
+  if (since >= HOLD) crossfade(expr);
+  else { pendingExpr = expr; pendingTimer = setTimeout(() => { if (pendingExpr) crossfade(pendingExpr); pendingExpr = null; }, HOLD - since); }
+  clearTimeout(idleTimer);
+  if (expr !== "neutral") idleTimer = setTimeout(() => setExpr("neutral"), IDLE_BACK);
+}
+function pulse(anim = "bounce") {
+  // クラスを A/B 交互に付け替えて再生（強制リフローなし）
+  flip = !flip; const base = anim === "cheer" ? "cheer" : "bounce";
+  bob.classList.remove("bounceA", "bounceB", "cheerA", "cheerB");
+  bob.classList.add(base + (flip ? "A" : "B"));
+}
 function show(expr, anim = "bounce") {
-  face.src = FACES[expr] || FACES.smile;
-  face.classList.remove("bounce", "cheer"); void face.offsetWidth; face.classList.add(anim);
+  if (expr && FACES[expr]) setExpr(expr);
+  if (anim) pulse(anim);
 }
 function bubble(t) { $("bubble").textContent = t; }
 
@@ -135,10 +162,10 @@ async function workout() {
           $("big").textContent = reps - t + 1;
           const left = reps - t + 1;
           if (t === cheerAt) { cheered++; speak(praise("call")); }
-          else if (left <= 5) { show("neutral"); bubble(`あと${left}秒！`); speak(String(left)); }
+          else if (left <= 5) { pulse("bounce"); bubble(`あと${left}秒！`); speak(String(left)); }
           else if (t % 10 === 0) { show("smile"); const f = pick(ex.form); bubble(f); speak(f); }
           else if (t === Math.floor(reps / 2) || (reps >= 40 && t === Math.floor(reps / 4))) { speak(praise("mid")); }
-          else if (t % 2) show(t % 4 === 1 ? "neutral" : "smile");
+          else if (t % 5 === 0) pulse("bounce");
           await wait(1000);
         }
       } else {
@@ -147,8 +174,8 @@ async function workout() {
           if (r === cheerAt) { cheered++; const c = praise("call"); await speak(`${countWord(r)}、${c}`); }
           else if (r === reps) { show("fun"); bubble("ラスト！"); speak(`ラスト、${countWord(r)}！`); }
           else if (r === Math.floor(reps / 2) && reps >= 6) { const m = praise("mid", {}, undefined, "bounce"); await speak(`${countWord(r)}、${m}`); }
-          else if (r % 7 === 3 && reps >= 6) { show("neutral"); const f = pick(ex.form); bubble(f); speak(countWord(r)); }
-          else { show(r % 2 ? "neutral" : "smile"); bubble(countWord(r)); speak(countWord(r)); }
+          else if (r % 7 === 3 && reps >= 6) { pulse("bounce"); const f = pick(ex.form); bubble(f); speak(countWord(r)); }
+          else { pulse("bounce"); bubble(countWord(r)); speak(countWord(r)); }
           await wait(tempo);
         }
       }
@@ -159,7 +186,7 @@ async function workout() {
         for (let t = rest; t > 0; t--) {
           $("big").textContent = t; $("sub").textContent = `休憩中（次は ${s + 1} セット目）`;
           if (t === 10) { show("neutral"); speak("あと10秒"); bubble("あと10秒、準備して"); }
-          if (t <= 3) { show("neutral"); speak(String(t)); }
+          if (t <= 3) { pulse("bounce"); speak(String(t)); }
           await wait(1000);
         }
         $("big").textContent = "";
@@ -196,7 +223,7 @@ const gemini = new GeminiCoach({
   onStatus: (t) => { $("gstatus").textContent = t; if (t === "未接続") $("gconnect").textContent = "Gemini で話す"; },
   onError: (t) => { $("error").textContent = t; },
   onText: (t) => { if (t === null) { gtext = ""; return; } gtext += t; bubble(gtext); },
-  onSpeaking: (on) => { if (on) show(Math.random() < 0.3 ? "fun" : "smile"); },
+  onSpeaking: (on) => { if (on && curExpr === "neutral") show(Math.random() < 0.3 ? "fun" : "smile", null); },
   onBadKey: () => { localStorage.removeItem(LS.gkey); $("gkey").value = ""; $("error").textContent = "この Gemini キーは使えません（残高切れか無効）。保存したキーは消しました。新しいキーを入れてな。"; },
 });
 $("gconnect").onclick = async () => {

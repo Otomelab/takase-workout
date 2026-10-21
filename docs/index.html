@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>高瀬さんの筋トレ応援</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <header><h1>高瀬さんの筋トレ応援</h1><div id="streak" class="streak"></div></header>
@@ -46,7 +46,7 @@
 
   <details class="card">
     <summary>設定・Gemini で自由におしゃべり</summary>
-    <label>呼んでほしい名前<input id="nickname" placeholder="例：由衣さん"></label>
+    <label>呼んでほしい名前<input id="nickname" value="由衣さん" placeholder="例：由衣さん"></label>
     <label><input type="checkbox" id="voiceOn" checked> 声で数える（ブラウザの読み上げ・無料）</label>
     <label>読み上げの声<select id="ttsVoice"></select></label>
     <hr>
@@ -61,6 +61,6 @@
   </details>
   <div id="error" class="error"></div>
 </main>
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=3"></script>
 </body>
 </html>

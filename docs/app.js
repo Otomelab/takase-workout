@@ -1,5 +1,5 @@
-import { GeminiCoach, GEMINI_MODELS, GEMINI_VOICES } from "./gemini.js";
-import { pickPraise, FACE_FOR } from "./praise.js";
+import { GeminiCoach, GEMINI_MODELS, GEMINI_VOICES } from "./gemini.js?v=3";
+import { pickPraise, FACE_FOR } from "./praise.js?v=3";
 
 const $ = (id) => document.getElementById(id);
 const FACES = { neutral: "img/neutral.png", smile: "img/smile.png", surprise: "img/surprise.png", shy: "img/shy.png", worried: "img/worried.png", fun: "img/fun.png" };
@@ -55,6 +55,7 @@ function speak(text, { rate = 1.1, pitch = 0.9 } = {}) {
 // --- 設定 ---
 const settings = JSON.parse(localStorage.getItem(LS.set) || "{}");
 for (const id of ["exercise", "reps", "sets", "rest", "tempo", "nickname"]) if (settings[id] != null) $(id).value = settings[id];
+if (settings.nickname == null) $("nickname").value = "由衣さん";
 if (settings.voiceOn === false) $("voiceOn").checked = false;
 $("gmodel").innerHTML = GEMINI_MODELS.map((m) => `<option>${m}</option>`).join("");
 $("gvoice").innerHTML = GEMINI_VOICES.map((v) => `<option>${v}</option>`).join("");

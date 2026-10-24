@@ -1,6 +1,6 @@
 # 高瀬さんの筋トレ応援アプリ
 
-▶ **https://ayumisan.github.io/slot-036/**
+▶ **https://otomelab.github.io/takase-workout/**
 
 トレーナーの高瀬航（たかせ わたる）さんが、筋トレの回数を声で数えて、とにかく褒めてくれるWebアプリです。インストール不要・無料・キー不要で使えます。
 
@@ -36,7 +36,7 @@
 
 ## クレジット
 
-- 高瀬さんのイラスト：[slot-097](https://github.com/ayumisan/slot-097) の `assets/expressions/takase/`
+- 高瀬さんのイラスト：[takase-otome](https://github.com/Otomelab/takase-otome) の `assets/expressions/takase/`
 - 読み上げ：ブラウザの Web Speech API
 - 会話（任意）：Google Gemini Live API
 
